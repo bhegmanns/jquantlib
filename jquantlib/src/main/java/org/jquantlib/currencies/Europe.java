@@ -41,6 +41,8 @@ import org.jquantlib.math.Rounding;
 
 public class Europe {
 
+	public static Currency EUR = new EURCurrency();
+	
     /**
      * Bulgarian lev The ISO three-letter code is BGL; the numeric code is 100. It is divided in 100 stotinki.
      * 

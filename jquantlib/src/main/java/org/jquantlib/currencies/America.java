@@ -40,6 +40,9 @@ package org.jquantlib.currencies;
 import org.jquantlib.math.Rounding;
 
 public class America {
+	
+	public static Currency USD = new USDCurrency();
+	
     /**
      * Argentinian peso The ISO three-letter code is ARS; the numeric code is 32. It is divided in 100 centavos.
      * 
