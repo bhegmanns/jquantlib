@@ -26,16 +26,35 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.Optional;
 
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.jquantlib.QL;
+import org.jquantlib.currencies.America;
 import org.jquantlib.currencies.Currency;
+import org.jquantlib.currencies.Europe;
+import org.jquantlib.currencies.America.USDCurrency;
 import org.jquantlib.currencies.Europe.CHFCurrency;
 import org.jquantlib.currencies.Europe.EURCurrency;
+import org.jquantlib.currencies.ExchangeRate;
+import org.jquantlib.currencies.ExchangeRateManager;
+import org.jquantlib.currencies.Money;
 import org.jquantlib.daycounters.DayCounter;
+import org.jquantlib.indexes.inflation.EUHICP;
 import org.jquantlib.math.Rounding;
+import org.jquantlib.testsuite.matcher.IsAmount;
+import org.jquantlib.testsuite.unitrule.InTestRule;
+import org.jquantlib.time.Date;
+import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+
+import static org.jquantlib.currencies.Europe.EUR;
+import static org.jquantlib.currencies.America.USD;
 
 //FIXME: http://bugs.jquantlib.org/view.php?id=474
 public class CurrencyTest {
@@ -43,6 +62,9 @@ public class CurrencyTest {
     public CurrencyTest() {
         QL.info("::::: "+this.getClass().getSimpleName()+" :::::");
     }
+    
+    @Rule
+    public InTestRule inTestRule = InTestRule.getWithEurBaseCurrency();
 
 
     @Test
@@ -91,6 +113,16 @@ public class CurrencyTest {
     public void testLeakyCurrencyInitialization(){
         final CHFCurrency chf = new CHFCurrency();
         chf.triangulationCurrency().code();
+    }
+    
+    @Test
+    public void addMoneyDifferentCurrencies(){
+    	ExchangeRateManager.getInstance().add(new ExchangeRate(USD, EUR, 2), Date.todaysDate(), Date.todaysDate());
+    	Money eurAmount = new Money(EUR, 10);
+    	Money usdAmount = new Money(USD, 10);
+    	
+    	Money sum = eurAmount.add(usdAmount);
+    	MatcherAssert.assertThat(sum,  IsAmount.amount(new Money(EUR, 30)));
     }
 
 

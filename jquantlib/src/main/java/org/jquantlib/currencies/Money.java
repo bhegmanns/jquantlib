@@ -22,6 +22,9 @@
 package org.jquantlib.currencies;
 
 
+import java.math.BigDecimal;
+import java.util.Optional;
+
 import org.jquantlib.QL;
 import org.jquantlib.lang.exceptions.LibraryException;
 import org.jquantlib.math.Closeness;
@@ -36,8 +39,9 @@ public class Money implements Cloneable {
     public static ConversionType conversionType;
     public static Currency baseCurrency;
 
+    private BigDecimal amount;
     // class fields
-    private/* @Decimal */double value_;
+    private /* @Decimal */ double value_;
     private Currency currency_;
 
     // constructors
@@ -46,16 +50,35 @@ public class Money implements Cloneable {
         this.value_ = (0.0);
     }
 
+    /**
+     * Creates a new Money-instance.
+     * 
+     * @param currency currency as Optional
+     * @param amount amount as Optional
+     */
+    public Money(Optional<Currency> currency, Optional<BigDecimal> amount){
+    	QL.validateExperimentalMode();
+    	this.amount = amount.get();
+    	this.currency_ = currency.get();
+    	this.value_ = this.amount.doubleValue();
+    }
+    
+    public Money(Currency currency, BigDecimal amount){
+    	this(Optional.of(currency), Optional.of(amount));
+    }
+    
     public Money(final Currency currency, /* @Decimal */final double value) {
         QL.validateExperimentalMode();
         this.value_ = (value);
         this.currency_ = (currency);
+        this.amount = new BigDecimal(this.value_);
     }
 
     public Money(/* @Decimal */final double value, final Currency currency) {
         QL.validateExperimentalMode();
         this.value_ = (value);
         this.currency_ = (currency.clone());
+        this.amount = new BigDecimal(this.value_);
     }
 
     @Override
@@ -63,6 +86,7 @@ public class Money implements Cloneable {
         final Money money = new Money();
         money.currency_ = currency_.clone();
         money.value_ = value_;
+        money.amount = new BigDecimal(amount.toString());
         return money;
     }
 
